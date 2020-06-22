@@ -1,0 +1,102 @@
+{
+	"info": {
+		"_postman_id": "2a8a3632-503f-4536-a4a4-7fe22374672b",
+		"name": "interogation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "get_type_of_interogation",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:9999/get_interrogation_type?",
+					"host": [
+						"localhost"
+					],
+					"port": "9999",
+					"path": [
+						"get_interrogation_type"
+					],
+					"query": [
+						{
+							"key": "sentence",
+							"value": "how are you doing",
+							"disabled": true
+						},
+						{
+							"key": "sentence",
+							"value": "is this a good time to talk",
+							"disabled": true
+						},
+						{
+							"key": "sentence",
+							"value": "wolud you like to have pizza or pasta ",
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_interogation",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:9999/get_interrogation?",
+					"host": [
+						"localhost"
+					],
+					"port": "9999",
+					"path": [
+						"get_interrogation"
+					],
+					"query": [
+						{
+							"key": "sentence",
+							"value": "Which class does your child study in? which standard is he in? This is looking great. How much did he score in the assessment?Do you have any specific requirement",
+							"disabled": true
+						},
+						{
+							"key": "sentence",
+							"value": "wolud you like to have pizza or pasta ",
+							"disabled": true
+						},
+						{
+							"key": "sentence",
+							"value": "do you love puppies",
+							"disabled": true
+						},
+						{
+							"key": "sentence",
+							"value": "this is looking good on you?",
+							"disabled": true
+						},
+						{
+							"key": "sentence",
+							"value": "you are looking good?",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
