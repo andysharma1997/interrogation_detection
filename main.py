@@ -39,39 +39,42 @@ def interrogation_detector(sentence):
         except IndexError:
             pass
     elif doc[0].pos_ == "VERB" or doc[0].tag_ in ver_tags:
-        if "neg" in doc[1].dep_:
-            if doc[2].tag_ in ver_tags and "nsubj" not in [item.dep_ for item in doc]:
-                subject = []
-                objects = []
-                for tok in doc:
-                    if "subj" in tok.dep_:
-                        subject.append(str(tok))
-                    if "obj" in tok.dep_:
-                        objects.append(str(tok))
-                return {"question": str(sentence), "subject": subject, "object": objects,
-                        "tag": "negation yes/no question"}
-            if doc[2].tag_ in ver_tags and "nsubj" in [item.dep_ for item in doc]:
-                subject = []
-                objects = []
-                for tok in doc:
-                    if "subj" in tok.dep_:
-                        subject.append(str(tok))
-                    if "obj" in tok.dep_:
-                        objects.append(str(tok))
-                return {"question": str(sentence), "subject": str(doc[[item.dep_ for item in doc].index("nsubj")]),
-                        "objects": objects, "tag": "negation yes/no question"}
+        if len(doc) > 3:
+            if "neg" in doc[1].dep_:
+                if doc[2].tag_ in ver_tags and "nsubj" not in [item.dep_ for item in doc]:
+                    subject = []
+                    objects = []
+                    for tok in doc:
+                        if "subj" in tok.dep_:
+                            subject.append(str(tok))
+                        if "obj" in tok.dep_:
+                            objects.append(str(tok))
+                    return {"question": str(sentence), "subject": subject, "object": objects,
+                            "tag": "negation yes/no question"}
+                if doc[2].tag_ in ver_tags and "nsubj" in [item.dep_ for item in doc]:
+                    subject = []
+                    objects = []
+                    for tok in doc:
+                        if "subj" in tok.dep_:
+                            subject.append(str(tok))
+                        if "obj" in tok.dep_:
+                            objects.append(str(tok))
+                    return {"question": str(sentence), "subject": str(doc[[item.dep_ for item in doc].index("nsubj")]),
+                            "objects": objects, "tag": "negation yes/no question"}
+            else:
+                if ("nsubj" in doc[1].dep_) or ("DET" in doc[1].pos_ and "nsubj" in doc[2].dep_):
+                    if "or" in [str(item) for item in doc]:
+                        return {"question": str(sentence), "tag": "alternative interrogative"}
+                    subject = []
+                    objects = []
+                    for tok in doc:
+                        if "subj" in tok.dep_:
+                            subject.append(str(tok))
+                        if "obj" in tok.dep_:
+                            objects.append(str(tok))
+                    return {"question": str(sentence), "subject": subject, "objects": objects, "tag": "yes/no question"}
         else:
-            if ("nsubj" in doc[1].dep_) or ("DET" in doc[1].pos_ and "nsubj" in doc[2].dep_):
-                if "or" in [str(item) for item in doc]:
-                    return {"question": str(sentence), "tag": "alternative interrogative"}
-                subject = []
-                objects = []
-                for tok in doc:
-                    if "subj" in tok.dep_:
-                        subject.append(str(tok))
-                    if "obj" in tok.dep_:
-                        objects.append(str(tok))
-                return {"question": str(sentence), "subject": subject, "objects": objects, "tag": "yes/no question"}
+            return {'tag': "not a question"}
     else:
         return {'tag': "not a question"}
 
@@ -88,13 +91,15 @@ def check_question(sentence):
 @app.route('/get_interrogation_type', methods=["POST", "GET"])
 def get_interrogation_type():
     sentence = request.args.get("sentence")
+    print(sentence)
     result = interrogation_detector(sentence)
+    print(result)
     if result is not None:
         resp = Response(jsonpickle.encode(result), mimetype='application/json')
         resp.headers['Access-Control-Allow-Origin'] = '*'
         return resp
     else:
-        resp = Response("Could not detect the correct grammar", mimetype='application/text')
+        resp = Response(jsonpickle.encode({'tag': "not a question"}), mimetype='application/json')
         resp.headers['Access-Control-Allow-Origin'] = '*'
         return resp
 
