@@ -1,7 +1,9 @@
 from initializer import phrase_maker, get_doc
 from flask import Flask, Response, request
 import jsonpickle
-
+import  text_processor
+from concurrent.futures import ProcessPoolExecutor
+import os
 matcher = phrase_maker()
 
 app = Flask(__name__)
@@ -91,8 +93,10 @@ def check_question(sentence):
 @app.route('/get_interrogation_type', methods=["POST", "GET"])
 def get_interrogation_type():
     sentence = request.args.get("sentence")
-    print(sentence)
-    result = interrogation_detector(sentence)
+    all_sentences = text_processor.sentence_breaker(sentence)
+    print("Got {} sentences".format(len(all_sentences)))
+    with ProcessPoolExecutor(max_workers=os.cpu_count()-2) as exe:
+        result = list(exe.map(interrogation_detector,all_sentences))
     print(result)
     if result is not None:
         resp = Response(jsonpickle.encode(result), mimetype='application/json')
