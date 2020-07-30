@@ -1,9 +1,10 @@
 from initializer import phrase_maker, get_doc
 from flask import Flask, Response, request
 import jsonpickle
-import  text_processor
+import text_processor
 from concurrent.futures import ProcessPoolExecutor
 import os
+
 matcher = phrase_maker()
 
 app = Flask(__name__)
@@ -95,11 +96,15 @@ def get_interrogation_type():
     sentence = request.args.get("sentence")
     all_sentences = text_processor.sentence_breaker(sentence)
     print("Got {} sentences".format(len(all_sentences)))
-    with ProcessPoolExecutor(max_workers=os.cpu_count()-2) as exe:
-        result = list(exe.map(interrogation_detector,all_sentences))
+    with ProcessPoolExecutor(max_workers=os.cpu_count() - 2) as exe:
+        result = list(exe.map(interrogation_detector, all_sentences))
     print(result)
-    if result is not None:
-        resp = Response(jsonpickle.encode(result), mimetype='application/json')
+    final_result = []
+    for item in result:
+        if item["tag"] != "not a question":
+            final_result.append(item)
+    if final_result is not None:
+        resp = Response(jsonpickle.encode(final_result), mimetype='application/json')
         resp.headers['Access-Control-Allow-Origin'] = '*'
         return resp
     else:
