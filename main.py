@@ -101,8 +101,9 @@ def get_interrogation_type():
     print(result)
     final_result = []
     for item in result:
-        if item["tag"] != "not a question":
-            final_result.append(item)
+        if item is not None:
+            if item["tag"] != "not a question":
+                final_result.append(item)
     if final_result is not None:
         resp = Response(jsonpickle.encode(final_result), mimetype='application/json')
         resp.headers['Access-Control-Allow-Origin'] = '*'
